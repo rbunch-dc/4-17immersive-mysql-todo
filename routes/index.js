@@ -4,6 +4,9 @@ var router = express.Router();
 // IMport our custom "config" node module.
 // It holds a single object that has our MySQL credentials
 var config = require('../config/config');
+
+console.log(config);
+
 // Include the mysql module. WE got this via npm
 var mysql = require('mysql');
 var connection =  mysql.createConnection({
@@ -13,20 +16,40 @@ var connection =  mysql.createConnection({
 	database: config.database
 });
 
+// We are now connected (after this line)!
+connection.connect();
+// now we can write some awesome quereies!
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+	var message = req.query.msg;
+	if(message == "added"){
+		message = "Your task was added!";
+	}
+	var selectQuery = "SELECT * FROM tasks";
+	connection.query(selectQuery, (error,results)=>{
+		res.render('index', { 
+			message: message,
+			taskArray: results
+		});
+	});
+  	
 });
 
 // Add a post route "addItem" to handle the form submission
 router.post('/addItem',(req,res)=>{
-	res.json(req.body)
+	// res.json(req.body)
 	var newTask = req.body.newTask;
 	var dueDate = req.body.newTaskDate;
 	// We know what they submitted from the form. It comes to this route
 	// inside req.body.NAMEOFFIELD. Now we need to insert it into MySQL.
-
+	var insertQuery = "INSERT INTO tasks (taskName, taskDate) VALUES ('"+newTask+"','"+dueDate+"')";
+	// res.send(insertQuery);
+	connection.query(insertQuery, (error, results)=>{
+		if(error) throw error;
+		res.redirect('/?msg=added');
+	});
 });
 
 module.exports = router;
