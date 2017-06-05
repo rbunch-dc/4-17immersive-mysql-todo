@@ -33,8 +33,7 @@ router.get('/', function(req, res, next) {
 			message: message,
 			taskArray: results
 		});
-	});
-  	
+	});  	
 });
 
 // Add a post route "addItem" to handle the form submission
@@ -51,5 +50,15 @@ router.post('/addItem',(req,res)=>{
 		res.redirect('/?msg=added');
 	});
 });
+
+router.get('/delete/:id', (req, res)=>{
+	var idToDelete = req.params.id;
+	var deleteQuery = "DELETE from tasks WHERE id = " + idToDelete;
+	connection.query(deleteQuery,(error,results)=>{
+		res.redirect('/?msg=deleted')
+	});
+	// res.send(idToDelete);
+})
+
 
 module.exports = router;
