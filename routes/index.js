@@ -28,7 +28,16 @@ router.get('/', function(req, res, next) {
 		message = "Your task was added!";
 	}
 	var selectQuery = "SELECT * FROM tasks";
+
+	console.log("==========ABOUT TO RUN QUERY=================");
+
 	connection.query(selectQuery, (error,results)=>{
+
+
+		console.log("==========ABOUT TO RENDER INDEX=================");
+
+
+
 		res.render('index', { 
 			message: message,
 			taskArray: results
@@ -43,11 +52,17 @@ router.post('/addItem',(req,res)=>{
 	var dueDate = req.body.newTaskDate;
 	// We know what they submitted from the form. It comes to this route
 	// inside req.body.NAMEOFFIELD. Now we need to insert it into MySQL.
-	var insertQuery = "INSERT INTO tasks (taskName, taskDate) VALUES ('"+newTask+"','"+dueDate+"')";
+	// var insertQuery = "INSERT INTO tasks (taskName, taskDate) VALUES ('"+newTask+"','"+dueDate+"')";
+	// var insertQuery = `INSERT INTO tasks (taskName, taskDate) VALUES ('${newTask}','${dueDate}')`;
+	var insertQuery = "INSERT INTO tasks (taskName, taskDate) VALUES (?,?)";
+
+	console.log("$$$$$$$$$$$$$$$$READY TO RUN THE INSERT QUERY$$$$$$$$$$$$$$$$");
+
 	// res.send(insertQuery);
-	connection.query(insertQuery, (error, results)=>{
+	connection.query(insertQuery, [newTask, dueDate], (error, results)=>{
 		if(error) throw error;
-		res.redirect('/?msg=added');
+		console.log("$$$$$$$$$$$$$$$$SENDING BACK TO HOME PAGE$$$$$$$$$$$$$$$$");
+		res.redirect('http://localhost:3000/?msg=added');
 	});
 });
 
@@ -60,5 +75,16 @@ router.get('/delete/:id', (req, res)=>{
 	// res.send(idToDelete);
 })
 
+// Make a new route to handle the edit page. It will be /edit/IDTOEDIT
+router.get('/edit/:id',(req, res)=>{
+	var idToEdit = req.params.id;
+	var selectQuery = "SELECT * FROM tasks WHERE id = ?";
+	connection.query(selectQuery, [idToEdit], (error,results)=>{
+		res.render('edit',{
+			task: results[0]
+		})
+		// res.json(results);
+	});
+});
 
 module.exports = router;
