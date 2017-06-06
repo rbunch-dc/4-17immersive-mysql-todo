@@ -26,18 +26,15 @@ router.get('/', function(req, res, next) {
 	var message = req.query.msg;
 	if(message == "added"){
 		message = "Your task was added!";
+	}else if(message == "updated"){
+		message = "Your task was updated!";
+	}else if(message == "deleted"){
+		message = "Your task was deleted!";
 	}
 	var selectQuery = "SELECT * FROM tasks";
-
-	console.log("==========ABOUT TO RUN QUERY=================");
-
+	// console.log("==========ABOUT TO RUN QUERY=================");
 	connection.query(selectQuery, (error,results)=>{
-
-
-		console.log("==========ABOUT TO RENDER INDEX=================");
-
-
-
+		// console.log("==========ABOUT TO RENDER INDEX=================");
 		res.render('index', { 
 			message: message,
 			taskArray: results
