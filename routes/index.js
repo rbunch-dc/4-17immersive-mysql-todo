@@ -87,4 +87,16 @@ router.get('/edit/:id',(req, res)=>{
 	});
 });
 
+router.post('/editItem', (req, res)=>{
+	// res.json(req.body);
+	var newTask = req.body.newTask;
+	var newTaskDate =req.body.newTaskDate;
+	var idToEdit = req.query.id;
+	var updateQuery = "UPDATE tasks SET taskName = ?, taskDate = ? WHERE id = ?";
+	connection.query(updateQuery, [newTask,newTaskDate,idToEdit], (error,results)=>{
+		res.redirect('/?msg=updated');
+	});
+});
+
+
 module.exports = router;
